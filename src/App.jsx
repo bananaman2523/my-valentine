@@ -9,8 +9,8 @@ const PasswordScreen = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Default password is "yayee" (case insensitive)
-    if (password.toLowerCase() === "yayee") {
+    // Default password is "hongtae" (case insensitive)
+    if (password.toLowerCase() === "hongtae") {
       onLogin();
     } else {
       setError(true);
@@ -28,7 +28,7 @@ const PasswordScreen = ({ onLogin }) => {
     >
       <div className="w-full max-w-xs text-center">
         <h2 className="text-3xl font-bold mb-8 tracking-widest">
-          PASSWORD
+          WHO IS YOUR VALENTINE?
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <motion.div
@@ -36,10 +36,10 @@ const PasswordScreen = ({ onLogin }) => {
             transition={{ duration: 0.4 }}
           >
             <input
-              type="password"
+              type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password..."
+              placeholder="Enter your name..."
               className="w-full bg-transparent border-b-2 border-white/30 p-3 text-center text-xl outline-none placeholder:text-white/20 focus:border-white transition-colors"
               autoFocus
             />
@@ -122,15 +122,25 @@ const ScrollingWavyText = ({ text, direction = "left" }) => {
 // Bento Grid Component
 const BentoGrid = () => {
   return (
-    <div className="grid grid-cols-3 grid-rows-2 gap-4 w-full max-w-md mb-8 h-64">
+    <div className="grid grid-cols-4 grid-rows-3 gap-4 w-full max-w-4xl mb-8 h-[500px] md:h-[600px]">
       {/* Large item */}
       <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2 }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1 }}
         className="col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
       >
-        <img src="https://placehold.co/400x400?text=Us+💖" alt="Main Memory" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <img src="https://placehold.co/600x600?text=Us+💖" alt="Main Memory" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </motion.div>
+      
+      {/* Vertical item */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="col-span-1 row-span-2 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
+      >
+        <img src="https://placehold.co/300x600?text=Together" alt="Memory 2" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
       </motion.div>
       
       {/* Small item 1 */}
@@ -140,9 +150,9 @@ const BentoGrid = () => {
         transition={{ delay: 0.3 }}
         className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
       >
-        <img src="https://placehold.co/200x200?text=Cute" alt="Memory 2" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <img src="https://placehold.co/300x300?text=Cute" alt="Memory 3" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
       </motion.div>
-      
+
       {/* Small item 2 */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
@@ -150,7 +160,37 @@ const BentoGrid = () => {
         transition={{ delay: 0.4 }}
         className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
       >
-        <img src="https://placehold.co/200x200?text=Love" alt="Memory 3" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <img src="https://placehold.co/300x300?text=Love" alt="Memory 4" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </motion.div>
+
+      {/* Horizontal item */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="col-span-2 row-span-1 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
+      >
+        <img src="https://placehold.co/600x300?text=Memories" alt="Memory 5" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </motion.div>
+
+      {/* Small item 3 */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6 }}
+        className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
+      >
+        <img src="https://placehold.co/300x300?text=Happy" alt="Memory 6" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </motion.div>
+
+      {/* Small item 4 */}
+      <motion.div 
+        initial={{ opacity: 0, rotate: -5 }}
+        animate={{ opacity: 1, rotate: 0 }}
+        transition={{ delay: 0.7 }}
+        className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg border-2 border-primary/20 relative group"
+      >
+        <img src="https://placehold.co/300x300?text=Forever" alt="Memory 7" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
       </motion.div>
     </div>
   );
@@ -181,10 +221,10 @@ const App = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="h-screen w-screen bg-base-200 flex flex-col overflow-hidden relative font-['Outfit']"
+          className="min-h-screen w-full bg-base-200 flex flex-col relative font-['Outfit'] overflow-x-hidden"
         >
           {/* Decorative background elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 z-0">
+          <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 z-0">
             <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
             <div className="absolute top-10 right-10 w-32 h-32 bg-secondary rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
             <div className="absolute -bottom-8 left-20 w-32 h-32 bg-accent rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
@@ -195,8 +235,8 @@ const App = () => {
             <ScrollingWavyText text="I LOVE YOU YAYEE" direction="right" />
           </div>
 
-          {/* Main Content (Scrollable) */}
-          <div className="flex-grow flex flex-col items-center justify-center p-4 z-10 overflow-y-auto no-scrollbar py-8">
+          {/* Main Content */}
+          <div className="flex-grow flex flex-col items-center justify-center p-4 z-10 py-8">
             {/* Bento Grid Gallery */}
             <BentoGrid />
 
