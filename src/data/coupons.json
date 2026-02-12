@@ -1,0 +1,38 @@
+[
+  {
+    "title": "One Free Hug",
+    "desc": "No questions asked, anytime!",
+    "color": "bg-pink-100 border-pink-300",
+    "icon": "🤗"
+  },
+  {
+    "title": "Romantic Dinner",
+    "desc": "Valid for one fancy (or street food) date!",
+    "color": "bg-red-100 border-red-300",
+    "icon": "🍝"
+  },
+  {
+    "title": "Movie Marathon",
+    "desc": "You pick all the movies tonight!",
+    "color": "bg-purple-100 border-purple-300",
+    "icon": "🎬"
+  },
+  {
+    "title": "Day of Compliments",
+    "desc": "Extra sweets for my sweetie all day!",
+    "color": "bg-yellow-100 border-yellow-300",
+    "icon": "✨"
+  },
+  {
+    "title": "Argument Winner",
+    "desc": "Use this to win any one argument (Limited!)",
+    "color": "bg-blue-100 border-blue-300",
+    "icon": "🏆"
+  },
+  {
+    "title": "Surprise Gift",
+    "desc": "Redeemable for a small surprise!",
+    "color": "bg-green-100 border-green-300",
+    "icon": "🎁"
+  }
+]
