@@ -67,20 +67,7 @@ const ScrollingWavyText = ({ text, direction = "left" }) => {
   
   const letters = Array.from(fullText);
 
-  // Animation variants for the container (scrolling)
-  const marqueeVariants = {
-    animate: {
-      x: direction === "left" ? [0, -1000] : [-1000, 0], // Move based on direction
-      transition: {
-        x: {
-          repeat: Infinity,
-          repeatType: "loop",
-          duration: 20, // Adjust speed
-          ease: "linear",
-        },
-      },
-    },
-  };
+
 
   return (
     <div className="overflow-hidden whitespace-nowrap py-4 bg-primary/10 w-full relative">
@@ -120,6 +107,60 @@ const ScrollingWavyText = ({ text, direction = "left" }) => {
 };
 
 // Bento Grid Component
+// Letter Envelope Component
+const LetterEnvelope = ({ isOpen, onOpen }) => {
+  const toggleEnvelope = () => {
+    if (!isOpen) {
+      onOpen();
+    }
+  };
+
+  return (
+    <div className="relative flex flex-col items-center justify-center p-8">
+      <motion.div 
+        className="relative w-64 h-44 bg-pink-200 rounded-b-lg shadow-xl cursor-pointer preserve-3d"
+        onClick={toggleEnvelope}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {/* Back of Envelope */}
+        <div className="absolute inset-0 bg-pink-300 rounded-b-lg overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full border-t-[88px] border-t-transparent border-l-[128px] border-l-pink-400 border-r-[128px] border-r-pink-400 border-b-[88px] border-b-pink-500"></div>
+        </div>
+
+        {/* Paper / Letter Inside */}
+        <motion.div 
+          className="absolute top-2 left-4 right-4 h-32 bg-white shadow-sm p-4 flex flex-col items-center justify-center rounded-sm z-10"
+          animate={isOpen ? { y: -60, transition: { delay: 0.5, duration: 0.8 } } : { y: 0 }}
+        >
+          <div className="w-12 h-1 bg-pink-100 mb-2"></div>
+          <div className="w-full h-1 bg-pink-50 mb-1"></div>
+          <div className="w-full h-1 bg-pink-50 mb-1"></div>
+          <div className="w-3/4 h-1 bg-pink-50"></div>
+          <div className="mt-2 text-pink-400 font-bold text-xs uppercase tracking-tighter">Open Me</div>
+        </motion.div>
+
+        {/* Top Flap */}
+        <motion.div 
+          className="absolute top-0 left-0 w-full h-0 border-t-[90px] border-t-pink-200 border-l-[128px] border-l-transparent border-r-[128px] border-r-transparent z-20 origin-top"
+          animate={isOpen ? { rotateX: 180, zIndex: 0 } : { rotateX: 0 }}
+          transition={{ duration: 0.5 }}
+        ></motion.div>
+
+        {!isOpen && (
+          <div className="absolute -top-4 -right-4 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center animate-bounce z-30 shadow-lg border-2 border-white">
+            ❤️
+          </div>
+        )}
+      </motion.div>
+      
+      <p className="mt-12 text-primary font-bold animate-pulse">
+        {!isOpen ? "จดหมายลับสำหรับคุณ... (คลิกเปิด)" : "กำลังส่งมอบความรัก..."}
+      </p>
+    </div>
+  );
+};
+
 const BentoGrid = () => {
   return (
     <div className="grid grid-cols-4 grid-rows-3 gap-4 w-full max-w-4xl mb-8 h-[500px] md:h-[600px]">
@@ -198,14 +239,63 @@ const BentoGrid = () => {
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [yesPressed, setYesPressed] = useState(false);
+  const [noCount, setNoCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [envelopeOpen, setEnvelopeOpen] = useState(false);
+
+  const handleOpenEnvelope = () => {
+    setEnvelopeOpen(true);
+    setTimeout(() => setShowModal(true), 1500);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    // Reset envelope after a short delay so user can click it again
+    setTimeout(() => setEnvelopeOpen(false), 500);
+  };
+
+  const handleNoClick = () => {
+    setNoCount(noCount + 1);
+  };
+
+  const getNoButtonText = () => {
+    const phrases = [
+      "ไม่",
+      "แน่ใจหรอ?",
+      "คิดดูอีกทีนะ",
+      "เสียใจจัง...",
+      "ได้โปรดดด",
+      "จะร้องไห้แล้วนะ",
+      "ใจร้ายยย",
+      "ฮือออออ",
+    ];
+    return phrases[Math.min(noCount, phrases.length - 1)];
+  };
+
+  const yesButtonSize = noCount * 20 + 16;
 
   const celebrate = () => {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#ff0000', '#ff69b4']
-    });
+    const duration = 15 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min, max) => {
+      return Math.random() * (max - min) + min;
+    };
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+    }, 250);
   };
 
   return (
@@ -221,18 +311,19 @@ const App = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="min-h-screen w-full bg-base-200 flex flex-col relative font-['Outfit'] overflow-x-hidden"
+          className={`min-h-screen w-full flex flex-col relative font-['Outfit'] overflow-x-hidden transition-colors duration-1000 ${yesPressed ? 'bg-base-200' : 'bg-black'}`}
+          data-theme={yesPressed ? "valentine" : "black"}
         >
           {/* Decorative background elements */}
           <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 z-0">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div className="absolute top-10 right-10 w-32 h-32 bg-secondary rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-8 left-20 w-32 h-32 bg-accent rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+            <div className={`absolute top-10 left-10 w-32 h-32 rounded-full mix-blend-multiply filter blur-3xl animate-blob ${yesPressed ? 'bg-primary' : 'bg-white/10'}`}></div>
+            <div className={`absolute top-10 right-10 w-32 h-32 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000 ${yesPressed ? 'bg-secondary' : 'bg-white/5'}`}></div>
+            <div className={`absolute -bottom-8 left-20 w-32 h-32 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000 ${yesPressed ? 'bg-accent' : 'bg-white/10'}`}></div>
           </div>
 
           {/* Header Marquee */}
-          <div className="w-full z-10 shadow-sm border-b border-primary/10 bg-base-100/50 backdrop-blur-sm flex-none">
-            <ScrollingWavyText text="I LOVE YOU YAYEE" direction="right" />
+          <div className={`w-full z-10 shadow-sm border-b backdrop-blur-sm flex-none transition-colors duration-1000 ${yesPressed ? 'border-primary/10 bg-base-100/50' : 'border-white/10 bg-black/50'}`}>
+            <ScrollingWavyText text={yesPressed ? "I LOVE YOU YAYEE" : "WILL YOU BE MINE?"} direction="right" />
           </div>
 
           {/* Main Content */}
@@ -245,29 +336,79 @@ const App = () => {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, type: "spring", bounce: 0.5, delay: 0.5 }}
-              className="card w-full max-w-sm md:max-w-md bg-base-100/80 backdrop-blur-md shadow-2xl border-4 border-base-100"
+              className={`card w-full max-w-sm md:max-w-md bg-base-100/80 backdrop-blur-md shadow-2xl border-4 min-h-[300px] flex items-center justify-center transition-all duration-1000 ${yesPressed ? 'border-base-100' : 'border-white/20'}`}
             >
-              <div className="card-body items-center text-center p-6">
-                <h2 className="card-title text-primary text-2xl font-bold mb-2">Happy Valentine's Day! 💖</h2>
-                <p className="text-lg text-base-content/80 mb-6">ขอบคุณที่เป็นความสุขให้กันนะ รักที่สุดเลย!</p>
-                <div className="card-actions w-full">
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn btn-primary btn-block text-lg shadow-lg shadow-primary/30" 
-                    onClick={celebrate}
-                  >
-                    กดรับความรัก 💌
-                  </motion.button>
-                </div>
+              <div className="card-body items-center text-center p-6 w-full overflow-visible">
+                {yesPressed ? (
+                  <LetterEnvelope isOpen={envelopeOpen} onOpen={handleOpenEnvelope} />
+                ) : (
+                  <>
+                    <h2 className="card-title text-white text-2xl font-bold mb-6">จะเป็นวาเลนไทน์ให้กันมั้ย? 🌹</h2>
+                    <div className="flex flex-col md:flex-row gap-4 items-center justify-center w-full">
+                      <button 
+                        className="btn btn-primary text-lg shadow-lg shadow-primary/30" 
+                        style={{ fontSize: yesButtonSize }}
+                        onClick={() => {
+                          setYesPressed(true);
+                          celebrate();
+                        }}
+                      >
+                        ตกลง 💖
+                      </button>
+                      <button 
+                        className="btn btn-ghost text-lg text-white/70 hover:text-white"
+                        onClick={handleNoClick}
+                      >
+                        {getNoButtonText()}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </motion.div>
+
           </div>
 
           {/* Footer Marquee */}
-          <div className="w-full z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] border-t border-primary/10 bg-base-100/50 backdrop-blur-sm flex-none">
-            <ScrollingWavyText text="I LOVE YOU YAYEE" direction="right" />
+          <div className={`w-full z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] border-t backdrop-blur-sm flex-none transition-colors duration-1000 ${yesPressed ? 'border-primary/10 bg-base-100/50' : 'border-white/10 bg-black/50'}`}>
+            <ScrollingWavyText text={yesPressed ? "I LOVE YOU YAYEE" : "WILL YOU BE MINE?"} direction="right" />
           </div>
+
+          {/* DaisyUI Modal - Moved to root level */}
+          <dialog id="love_letter_modal" className={`modal ${showModal ? 'modal-open' : ''}`}>
+            <div className="modal-box bg-white border-4 border-primary p-0 overflow-hidden max-w-lg shadow-2xl">
+              <div className="bg-primary p-4 text-white text-center">
+                <h3 className="font-bold text-2xl uppercase tracking-[0.2em]">Our Secret Letter</h3>
+              </div>
+              <div className="p-8 text-center bg-[url('https://www.transparenttextures.com/patterns/lined-paper.png')]">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={showModal ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.3 }}
+                >
+                  <h2 className="text-3xl font-['Outfit'] font-bold text-primary mb-6 italic">ถึง... ยายีผู้เป็นที่รัก 💖</h2>
+                  <div className="space-y-4 text-left font-['Outfit'] text-lg text-gray-700 leading-relaxed">
+                    <p>ตั้งแต่วันแรกที่ได้รู้จักกัน โลกของเค้าก็น่าอยู่ขึ้นเยอะเลย</p>
+                    <p>ขอบคุณที่เป็นความสุขในทุกๆ วัน ขอบคุณที่คอยซัพพอร์ตกันเสมอ</p>
+                    <p>ไม่ว่าจะเจอเรื่องอะไร อยากให้รู้ว่ามีเค้าอยู่ข้างๆ ตลอดไปนะ</p>
+                    <p>จะรักและดูแลเธอให้ดีที่สุดเลย สัญญาครับ!</p>
+                  </div>
+                  <div className="mt-10 pt-6 border-t border-primary/20 flex flex-col items-end">
+                    <p className="text-primary font-bold italic text-xl">รักที่สุดเลยนะ</p>
+                    <p className="text-sm text-gray-400 mt-1">14 February 2026</p>
+                  </div>
+                </motion.div>
+              </div>
+              <div className="modal-action p-4 bg-gray-50 m-0">
+                <button className="btn btn-primary w-full" onClick={handleCloseModal}>
+                  ปิดกล่องแห่งความรัก 💖
+                </button>
+              </div>
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button onClick={handleCloseModal}>close</button>
+            </form>
+          </dialog>
         </motion.div>
       )}
     </>
