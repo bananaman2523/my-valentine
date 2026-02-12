@@ -152,9 +152,9 @@ const App = () => {
                           <motion.h2 
                             animate={{ y: [0, -5, 0] }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                            className="card-title text-white text-3xl md:text-5xl font-black mb-12 italic tracking-tight leading-tight"
+                            className="card-title text-white text-3xl md:text-2xl font-black mb-12 tracking-tight leading-tight"
                           >
-                            จะเป็นวาเลนไทน์<br/>ให้กันมั้ยครับ? 🌹
+                            จะไปเที่ยววันวาเลนไทน์กันไหมม? 🌹
                           </motion.h2>
 
                           <div className="flex flex-col md:flex-row gap-8 items-center justify-center w-full mt-4">

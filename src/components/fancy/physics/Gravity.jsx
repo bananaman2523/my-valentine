@@ -13,27 +13,30 @@ export const MatterBody = ({ children, matterBodyOptions = {}, bodyType = "recta
 
     const { world } = engine;
     const element = ref.current;
-    const rect = element.getBoundingClientRect();
     
-    // Parse x and y if they are percentages
+    // Parse coordinates properly
     const parseCoord = (val, max) => {
       if (typeof val === "string" && val.endsWith("%")) {
         return (parseFloat(val) / 100) * max;
       }
-      return val || 0;
+      return parseFloat(val) || 0;
     };
 
-    const containerWidth = element.closest('.gravity-container')?.clientWidth || window.innerWidth;
-    const containerHeight = element.closest('.gravity-container')?.clientHeight || window.innerHeight;
+    const container = element.closest('.gravity-container');
+    const containerWidth = container?.clientWidth || window.innerWidth;
+    const containerHeight = container?.clientHeight || window.innerHeight;
 
     const startX = parseCoord(x, containerWidth);
     const startY = parseCoord(y, containerHeight);
-    const bodyWidth = width || rect.width;
-    const bodyHeight = height || rect.height;
+
+    // Get actual size with a fallback for hidden elements
+    const rect = element.getBoundingClientRect();
+    const bodyWidth = width || (rect.width > 0 ? rect.width : 120);
+    const bodyHeight = height || (rect.height > 0 ? rect.height : 40);
 
     let body;
     if (bodyType === "circle") {
-      body = Matter.Bodies.circle(startX, startY, radius || bodyWidth / 2, {
+      body = Matter.Bodies.circle(startX, startY, radius || Math.max(bodyWidth, bodyHeight) / 2, {
         ...matterBodyOptions,
         label: id.current
       });
@@ -47,11 +50,14 @@ export const MatterBody = ({ children, matterBodyOptions = {}, bodyType = "recta
     Matter.Composite.add(world, body);
     bodiesMap.current.set(id.current, { body, element });
 
+    // Force visibility update
+    element.style.visibility = 'visible';
+
     return () => {
       Matter.Composite.remove(world, body);
       bodiesMap.current.delete(id.current);
     };
-  }, [engine]);
+  }, [engine, x, y, bodyType]); // Add dependencies to allow dynamic updates if needed
 
   return (
     <div ref={ref} className="absolute touch-none select-none" style={{ left: 0, top: 0, visibility: 'hidden' }}>
@@ -76,18 +82,25 @@ const Gravity = forwardRef(({ children, gravity = { x: 0, y: 1 }, className = ""
     engine.gravity.y = gravity.y;
 
     const container = containerRef.current;
-    const { width, height } = container.getBoundingClientRect();
-
-    const world = engine.world;
     
-    // Walls
-    const wallOptions = { isStatic: true, friction: 0.5 };
-    const ground = Matter.Bodies.rectangle(width / 2, height + 25, width, 50, wallOptions);
-    const leftWall = Matter.Bodies.rectangle(-25, height / 2, 50, height, wallOptions);
-    const rightWall = Matter.Bodies.rectangle(width + 25, height / 2, 50, height, wallOptions);
-    const ceiling = Matter.Bodies.rectangle(width / 2, -25, width, 50, wallOptions);
+    // Function to set up walls based on current container size
+    const setupWorld = () => {
+      const { width, height } = container.getBoundingClientRect();
+      const world = engine.world;
+      
+      // Clear existing walls (if any)
+      Matter.World.clear(world, false);
 
-    Matter.Composite.add(world, [ground, leftWall, rightWall, ceiling]);
+      const wallOptions = { isStatic: true, friction: 0.5, label: 'wall' };
+      const ground = Matter.Bodies.rectangle(width / 2, height + 25, width + 100, 50, wallOptions);
+      const leftWall = Matter.Bodies.rectangle(-25, height / 2, 50, height + 100, wallOptions);
+      const rightWall = Matter.Bodies.rectangle(width + 25, height / 2, 50, height + 100, wallOptions);
+      const ceiling = Matter.Bodies.rectangle(width / 2, -25, width + 100, 50, wallOptions);
+
+      Matter.Composite.add(world, [ground, leftWall, rightWall, ceiling]);
+    };
+
+    setupWorld();
 
     const runner = Matter.Runner.create();
     Matter.Runner.run(runner, engine);
@@ -106,11 +119,16 @@ const Gravity = forwardRef(({ children, gravity = { x: 0, y: 1 }, className = ""
     };
     update();
 
+    // Handle resize
+    const handleResize = () => setupWorld();
+    window.addEventListener('resize', handleResize);
+
     return () => {
       cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
       Matter.Runner.stop(runner);
       Matter.Engine.clear(engine);
-      Matter.World.clear(world);
+      Matter.World.clear(engine.world);
     };
   }, [resetKey]);
 
