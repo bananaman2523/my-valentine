@@ -231,15 +231,6 @@ const App = () => {
                            <LoveCoupons />
                       </motion.section>
 
-                      {/* Bucket List */}
-                      <motion.section 
-                          initial={{ opacity: 0, y: 30 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true, margin: "-100px" }}
-                          className="w-full flex justify-center"
-                      >
-                           <BucketList />
-                      </motion.section>
 
                       {/* Final Action - Letter */}
                       <motion.section 

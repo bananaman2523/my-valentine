@@ -8,20 +8,104 @@ const LoveCoupons = () => {
     const containerRef = useRef(null);
     const coupons = initialCoupons;
 
-    const handleUseCoupon = (index) => {
+    const handleUseCoupon = (index, coupon) => {
         if (usedCoupons.has(index)) return;
         
         const newUsed = new Set(usedCoupons);
         newUsed.add(index);
         setUsedCoupons(newUsed);
 
-        // Individual coupon confetti
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#ff1e56', '#ffacb7', '#ffffff']
-        });
+        // Specialized Effects based on coupon type
+        switch (coupon.title) {
+            case "One Free Hug":
+                // Heart confetti
+                const heart = confetti.shapeFromText({ text: '❤️', scalar: 3 });
+                confetti({
+                    particleCount: 50,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    shapes: [heart],
+                    scalar: 2
+                });
+                break;
+            case "Romantic Dinner":
+                // Food/Warm colors
+                confetti({
+                    particleCount: 150,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff9a9e', '#fecfef', '#fad0c4']
+                });
+                confetti({
+                    particleCount: 150,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff9a9e', '#fecfef', '#fad0c4']
+                });
+                break;
+            case "Movie Marathon":
+                // Starry cinematic effect
+                const star = confetti.shapeFromText({ text: '⭐', scalar: 2 });
+                confetti({
+                    particleCount: 80,
+                    spread: 120,
+                    origin: { y: 0.7 },
+                    shapes: [star],
+                    colors: ['#ffffff', '#000000', '#ffd700']
+                });
+                break;
+            case "Day of Compliments":
+                // Shimmering sparkles
+                const duration = 3 * 1000;
+                const end = Date.now() + duration;
+                (function frame() {
+                    confetti({
+                        particleCount: 2,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#FFE700', '#FFF500']
+                    });
+                    confetti({
+                        particleCount: 2,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#FFE700', '#FFF500']
+                    });
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+                break;
+            case "Argument Winner":
+                // Blue "Peace" winner blast
+                confetti({
+                    particleCount: 200,
+                    spread: 160,
+                    origin: { y: 0.6 },
+                    colors: ['#00d2ff', '#3a7bd5', '#ffffff']
+                });
+                break;
+            case "Surprise Gift":
+                // Rainbow surprise
+                confetti({
+                    particleCount: 250,
+                    spread: 360,
+                    origin: { y: 0.5 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+                });
+                break;
+            default:
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ff1e56', '#ffacb7', '#ffffff']
+                });
+        }
     };
 
     return (
@@ -34,7 +118,7 @@ const LoveCoupons = () => {
                     return (
                         <motion.div
                             key={index}
-                            onClick={() => handleUseCoupon(index)}
+                            onClick={() => handleUseCoupon(index, coupon)}
                             whileHover={!isUsed ? { y: -8, scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 } : {}}
                             whileTap={!isUsed ? { scale: 0.98 } : {}}
                             initial={{ opacity: 0, y: 20 }}
