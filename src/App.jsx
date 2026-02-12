@@ -11,6 +11,7 @@ import LoveTimer from "./components/LoveTimer";
 import ReasonJar from "./components/ReasonJar";
 import LoveCoupons from "./components/LoveCoupons";
 import BucketList from "./components/BucketList";
+import MusicPlayer from "./components/MusicPlayer";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -289,6 +290,7 @@ const App = () => {
           </dialog>
         </motion.div>
       )}
+      <MusicPlayer autoPlay={yesPressed} />
     </>
   );
 }
